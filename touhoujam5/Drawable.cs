@@ -36,5 +36,53 @@ namespace touhoujam5
         {
             return (float)Math.Sqrt(Math.Pow(other.Position.X - Position.X, 2) + Math.Pow(other.Position.Y - Position.Y, 2));
         }
+
+        public virtual T Closest<T>(List<T> candidates, out float distance) where T : HitboxHaver
+        {
+            if (candidates.Count == 0)
+            {
+                throw new Exception("empty list not valid for closest");
+            }
+
+            T closest = candidates[0];
+            float closestDist = closest.DistanceTo(this);
+
+            for (int i = 1; i < candidates.Count; i++)
+            {
+                float dist = candidates[i].DistanceTo(this);
+                if (dist < closestDist)
+                {
+                    closest = candidates[i];
+                    closestDist = dist;
+                }
+            }
+
+            distance = closestDist;
+            return closest;
+        }
+
+        public virtual T Farthest<T>(List<T> candidates, out float distance) where T : HitboxHaver
+        {
+            if (candidates.Count == 0)
+            {
+                throw new Exception("empty list not valid for closest");
+            }
+
+            T farthest = candidates[0];
+            float farthestDist = farthest.DistanceTo(this);
+
+            for (int i = 1; i < candidates.Count; i++)
+            {
+                float dist = candidates[i].DistanceTo(this);
+                if (dist > farthestDist)
+                {
+                    farthest = candidates[i];
+                    farthestDist = dist;
+                }
+            }
+
+            distance = farthestDist;
+            return farthest;
+        }
     }
 }

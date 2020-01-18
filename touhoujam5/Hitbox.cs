@@ -35,7 +35,7 @@ namespace touhoujam5
 
         public float AngleTo(Hitbox other, Vector2f myPos, Vector2f otherPos)
         {
-            var delta = (otherPos + Position) - (myPos + other.Position);
+            var delta = (otherPos + other.Position) - (myPos + Position);
             return (float)Math.Atan2(delta.Y, delta.X);
         }
     }

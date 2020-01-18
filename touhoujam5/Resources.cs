@@ -11,18 +11,36 @@ namespace touhoujam5
     {
         private static Dictionary<string, object> _cache = new Dictionary<string, object>();
 
-        public static Texture Texture(string filename)
+        private static bool TryGet<T>(string filename, out T ret) where T : class
         {
             if (_cache.ContainsKey(filename))
             {
-                return _cache[filename] as Texture;
+                ret = _cache[filename] as T;
+                return true;
             }
-            else
+
+            ret = null;
+            return false;
+        }
+
+        public static Texture Texture(string filename)
+        {
+            if (!TryGet(filename, out Texture ret))
             {
-                var ret = new Texture(filename);
-                _cache[filename] = ret;
-                return ret;
+                ret = new Texture(filename);
             }
+
+            return ret;
+        }
+
+        public static Font Font(string filename)
+        {
+            if (!TryGet(filename, out Font ret))
+            {
+                ret = new Font(filename);
+            }
+
+            return ret;
         }
     }
 }

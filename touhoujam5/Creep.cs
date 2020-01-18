@@ -13,15 +13,20 @@ namespace touhoujam5
         public float Hp { get; protected set; }
         public float MoveSpeed { get; protected set; }
         public float Cooldown { get; protected set; }
+        public abstract float Worth { get; }
+        public bool HasReachedEnd = false;
+        public bool HasDied = false;
 
         private float _maxHp;
         private float _moveProgress = 0;
         private Vector2i[] _path;
         private int _index;
+        private List<Bullet> _beenHitBy = new List<Bullet>();
 
         private RectangleShape _hpBackground, _hpForeground;
 
-        protected Creep(string texturePath, int textureIndex, Level level, Hitbox hitbox, float hp, float moveSpeed, float cooldown) : base(texturePath, textureIndex, hitbox)
+        protected Creep(string texturePath, int textureIndex, Level level, Hitbox hitbox, float hp, float moveSpeed, float cooldown)
+            : base(texturePath, textureIndex, hitbox)
         {
             _maxHp = Hp = hp;
             MoveSpeed = moveSpeed;
@@ -60,8 +65,9 @@ namespace touhoujam5
                 _moveProgress %= 1;
                 _index++;
 
-                if (_index == _path.Length)
+                if (_index == _path.Length - 1)
                 {
+                    HasReachedEnd = true;
                     return;
                 }
             }
@@ -74,10 +80,30 @@ namespace touhoujam5
             Position = actualPos;
         }
 
-        public void Damage(float amount)
+        public void Damage(Bullet offendingBullet)
         {
-            Hp -= amount;
-            _hpForeground.Size = new Vector2f(Game.TileSize * (Hp / _maxHp), 8);
+            if (!_beenHitBy.Contains(offendingBullet))
+            {
+                Hp -= CalculateDamage(offendingBullet);
+
+                if (Hp <= 0)
+                {
+                    Hp = 0;
+                    HasDied = true;
+                }
+
+                _hpForeground.Size = new Vector2f(Game.TileSize * (Hp / _maxHp), 8);
+
+                if (!offendingBullet.IsMultiHit)
+                {
+                    _beenHitBy.Add(offendingBullet);
+                }
+            }
+        }
+
+        protected virtual float CalculateDamage(Bullet offendingBullet)
+        {
+            return offendingBullet.Strength;
         }
 
         public override void Draw(RenderTarget target)

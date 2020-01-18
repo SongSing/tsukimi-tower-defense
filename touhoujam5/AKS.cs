@@ -163,6 +163,11 @@ namespace touhoujam5
             return GetMouseState(button) == KeyState.JustPressed;
         }
 
+        public static bool WasJustReleased(Mouse.Button button)
+        {
+            return GetMouseState(button) == KeyState.JustReleased;
+        }
+
         public static int Axis(Keyboard.Key negative, Keyboard.Key positive)
         {
             return Convert.ToInt32(IsKeyDown(positive)) - Convert.ToInt32(IsKeyDown(negative));

@@ -21,6 +21,8 @@ namespace touhoujam5
             {
                 var delta = retList[1] - retList[0];
                 retList.Insert(0, retList[0] - delta);
+                delta = retList[retList.Count - 1] - retList[retList.Count - 2];
+                retList.Add(retList[retList.Count - 1] + delta);
                 return retList.ToArray();
             }
             else

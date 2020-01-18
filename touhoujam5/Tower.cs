@@ -10,25 +10,46 @@ namespace touhoujam5
 {
     abstract class Tower : Drawable
     {
-        public bool IsPlaced { get; set; }
-        public float[] Cost;
-        public float ShotRate;
+        private bool _isPlaced = false;
+        public bool IsPlaced
+        {
+            get => _isPlaced;
+            set
+            {
+                if (value)
+                {
+                    HasBeenPlaced = true;
+                }
+                _isPlaced = value;
+            }
+        }
+        public bool HasBeenPlaced { get; private set; }
+        public string Name { get; private set; }
+        public string Description { get; private set; }
+        public float Cost => !IsPlaced ? (HasBeenPlaced ? 0 : _costs[0]) : (Level + 1 == NumLevels ? -1 : _costs[Level + 1]);
+        public float ShotRate => _shotRates[Level];
+        public float NextShotRate => _shotRates[Level + 1];
+        public float Strength => _strengths[Level];
+        public float NextStrength => _strengths[Level + 1];
         public float Range => _ranges[Level];
-        public int Level;
-        public int NumLevels => Cost.Length;
+        public float NextRange => _ranges[Level + 1];
+        public int Level { get; protected set; }
+        public int NumLevels => _costs.Length;
 
         private float _shotCounter = 0;
-        private float[] _ranges;
+        private float[] _ranges, _shotRates, _costs, _strengths;
         private CircleShape _rangeShape;
 
 
-        protected Tower(Vector2i pos, string texturePath, int textureIndex, float[] cost, float shotRate, float[] ranges)
+        protected Tower(string texturePath, int textureIndex, string name, string description, float[] costs, float[] shotRates, float[] ranges, float[] strengths)
             : base(texturePath, textureIndex)
         {
-            Cost = cost;
-            ShotRate = shotRate;
-            Position = Utils.Grid2f(pos);
+            Name = name;
+            Description = description;
+            _costs = costs;
+            _shotRates = shotRates;
             _ranges = ranges;
+            _strengths = strengths;
             Level = 0;
             IsPlaced = false;
 
@@ -40,6 +61,8 @@ namespace touhoujam5
                 Origin = new Vector2f(Range, Range)
             };
         }
+
+        public abstract string GetExtraInfo(int level);
 
         /// <summary>
         /// Should add bullets to Bullets
@@ -70,12 +93,22 @@ namespace touhoujam5
 
         public override void Draw(RenderTarget target)
         {
-            base.Draw(target);
-
             if (Game.PlayArea.InfoTower == this)
             {
                 _rangeShape.Position = Position;
                 target.Draw(_rangeShape);
+            }
+
+            base.Draw(target);
+        }
+
+        public virtual void LevelUp()
+        {
+            if (Level != NumLevels - 1)
+            {
+                Level++;
+                _rangeShape.Radius = Range;
+                _rangeShape.Origin = new Vector2f(Range, Range);
             }
         }
     }

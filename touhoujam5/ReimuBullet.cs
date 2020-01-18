@@ -12,7 +12,7 @@ namespace touhoujam5
     {
         private float _angle;
 
-        public ReimuBullet(Vector2f position, float angle) : base("Content/bullets.png", 0, new Hitbox(new Vector2f(0, 0), 8), position, 1)
+        public ReimuBullet(Vector2f position, float angle, float strength) : base(0, new Hitbox(new Vector2f(0, 0), 8), position, strength, false)
         {
             _angle = angle;
         }
@@ -56,6 +56,12 @@ namespace touhoujam5
             }
 
             Position += new Vector2f((float)Math.Cos(_angle) * delta * 200, (float)Math.Sin(_angle) * delta * 200);
+            float r = (float)Game.TileSize / 2;
+
+            if (Position.X < -r || Position.Y < -r || Position.X > Game.PlayArea.Size.X + r || Position.Y > Game.PlayArea.Size.Y + r)
+            {
+                ShouldBeCulled = true;
+            }
         }
     }
 }
