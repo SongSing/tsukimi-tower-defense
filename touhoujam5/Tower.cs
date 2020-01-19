@@ -19,6 +19,7 @@ namespace touhoujam5
                 if (value)
                 {
                     HasBeenPlaced = true;
+                    OnPlace();
                 }
                 _isPlaced = value;
             }
@@ -26,7 +27,9 @@ namespace touhoujam5
         public bool HasBeenPlaced { get; private set; }
         public string Name { get; private set; }
         public string Description { get; private set; }
-        public float Cost => !IsPlaced ? (HasBeenPlaced ? 0 : _costs[0]) : (Level + 1 == NumLevels ? -1 : _costs[Level + 1]);
+        public float Cost => !IsPlaced ? (HasBeenPlaced ? 0 : _costs[0]) : UpgradeCost;
+        public float UpgradeCost => Level + 1 == NumLevels ? -1 : _costs[Level + 1];
+        public float Worth => _costs[Level] / 2;
         public float ShotRate => _shotRates[Level];
         public float NextShotRate => _shotRates[Level + 1];
         public float Strength => _strengths[Level];
@@ -62,6 +65,13 @@ namespace touhoujam5
             };
         }
 
+        public virtual void OnPlace()
+        {
+
+        }
+
+        public abstract Tower CloneLevel0();
+
         public abstract string GetExtraInfo(int level);
 
         /// <summary>
@@ -93,6 +103,24 @@ namespace touhoujam5
 
         public override void Draw(RenderTarget target)
         {
+            Draw(target, false);
+        }
+
+        public void Draw(RenderTarget target, bool shouldBeRed)
+        {
+            if (shouldBeRed)
+            {
+                _sprite.Color = new Color(255, 0, 0);
+                _rangeShape.FillColor = new Color(255, 0, 0, 128);
+                _rangeShape.OutlineColor = new Color(255, 0, 0);
+            }
+            else
+            {
+                _sprite.Color = Color.White;
+                _rangeShape.FillColor = new Color(255, 255, 255, 128);
+                _rangeShape.OutlineColor = new Color(255, 255, 255, 255);
+            }
+
             if (Game.PlayArea.InfoTower == this)
             {
                 _rangeShape.Position = Position;

@@ -27,7 +27,6 @@ namespace touhoujam5
         private HashSet<CreepWave> _finishedWaves = new HashSet<CreepWave>();
         private int _widthTiles;
         private int _heightTiles;
-        private int _tileSize;
         private Level _level;
         private Texture _tilesTexture;
         private Sprite[] _tiles;
@@ -55,17 +54,12 @@ namespace touhoujam5
 
         public PlayArea(Vector2i sizeTiles, Vector2f position) : base(Utils.Vi2u(sizeTiles * Game.TileSize), position)
         {
-            _tileSize = Game.TileSize;
             _widthTiles = sizeTiles.X;
             _heightTiles = sizeTiles.Y;
 
             Size = sizeTiles * Game.TileSize;
 
             _tilesTexture = new Texture("Content/tiles.png");
-
-            Game.Towers.Add(new ReimuTower());
-            Game.Towers.Add(new YoumuTower());
-            Game.Towers.Add(new YoumuTower());
         }
 
         public void Start()
@@ -95,6 +89,7 @@ namespace touhoujam5
                 throw new Exception("fuckkkkk seriously?");
             }
 
+            IsPaused = false;
             IsStarted = false;
             IsFinished = false;
             _softFinished = false;
@@ -105,42 +100,58 @@ namespace touhoujam5
             Hp = MaxHp = level.Hp;
             CurrentlySelected = null;
             CurrentlyHovered = null;
+            CurrentlyPlacing = null;
             _finishedWaves.Clear();
+            _bulletsToRemove.Clear();
+            Bullets.Clear();
+            Game.Towers.Clear();
+            Distributor.Reset();
+            Waves.Clear();
+            _waveToSpawn = null;
+
 
             int i = 0;
             for (int x = 0; x < this._widthTiles; x++)
             {
                 for (int y = 0; y < this._heightTiles; y++)
                 {
-                    _tiles[i++] = new Sprite(_tilesTexture, new IntRect(_level.Data[x, y] * _tileSize, 0, _tileSize, _tileSize))
+                    int tile = _level.Data[x, y];
+                    int index = 0;
+
+                    if ((tile & Level.S) != 0)
+                    {
+                        index = 2;
+                    }
+                    else if ((tile & Level.E) != 0)
+                    {
+                        index = 3;
+                    }
+                    else if (tile != 0)
+                    {
+                        index = 1;
+                    }
+
+                    _tiles[i++] = new Sprite(_tilesTexture, new IntRect(index * Game.TileSize, 0, Game.TileSize, Game.TileSize))
                     {
                         Position = Utils.Grid2f(new Vector2i(x, y)),
                         Origin = new Vector2f(Game.TileSize, Game.TileSize) / 2
                     };
                 }
             }
-
-            foreach (Tower tower in Game.Towers)
-            {
-                tower.IsPlaced = false;
-            }
-
-            Distributor.Reset();
-            Waves.Clear();
         }
 
         public override void Update(float delta)
         {
             bool didPlace = false;
+            var snappedPos = Utils.Snap2Grid(Game.MousePosition);
 
             if (CurrentlyPlacing != null)
             {
                 if (AKS.WasJustReleased(Mouse.Button.Left))
                 {
-                    Vector2i gridPos = Utils.Vf2Grid(Game.MousePositionf);
-                    if (gridPos.X < _widthTiles && gridPos.Y < _heightTiles && CurrentlyPlacing.Cost <= Game.Money)
+                    if (CanPlaceTowerAt(snappedPos))
                     {
-                        CurrentlyPlacing.Position = Utils.Grid2f(gridPos);
+                        CurrentlyPlacing.Position = snappedPos;
                         Game.Money -= CurrentlyPlacing.Cost;
                         CurrentlyPlacing.IsPlaced = true;
                         CurrentlySelected = CurrentlyPlacing;
@@ -150,11 +161,11 @@ namespace touhoujam5
                 }
                 else if (AKS.WasJustReleased(Mouse.Button.Right))
                 {
+                    Game.Towers.Remove(CurrentlyPlacing);
                     CurrentlyPlacing = null;
                 }
             }
 
-            var snappedPos = Utils.Snap2Grid(Game.MousePosition);
             bool newSelected = false;
             CurrentlyHovered = null;
 
@@ -199,7 +210,8 @@ namespace touhoujam5
                     Hp -= wave.FrameDamage;
                     if (Hp <= 0)
                     {
-                        // TODO: GAME OVER :(
+                        Game.IsGameOver = true;
+                        return;
                     }
 
                     if (wave.IsFinishedSpawning && !_finishedWaves.Contains(wave))
@@ -238,13 +250,17 @@ namespace touhoujam5
                     {
                         _bulletsToRemove.Add(bullet);
                     }
-                    else if (bullet.IsCollidable)
+                    if (bullet.IsCollidable)
                     {
                         foreach (var wave in Waves)
                         {
-                            if (wave.TryBullet(bullet) && !bullet.IsPiercing)
+                            if (!wave.TryBullet(bullet))
                             {
-                                _bulletsToRemove.Add(bullet);
+                                if (bullet.ShouldBeCulled)
+                                {
+                                    _bulletsToRemove.Add(bullet);
+                                }
+                                continue;
                             }
                         }
                     }
@@ -292,6 +308,15 @@ namespace touhoujam5
             }
         }
 
+        public bool CanPlaceTowerAt(Vector2f snappedPos)
+        {
+            var gridPos = Utils.Vf2Grid(snappedPos);
+            return gridPos.X < _level.Data.GetLength(0) && gridPos.Y < _level.Data.GetLength(1) &&
+                _level.Data[gridPos.X, gridPos.Y] == 0 &&
+                CurrentlyPlacing.Cost <= Game.Money &&
+                !Game.Towers.Exists(tower => tower.IsPlaced && tower.Position == snappedPos);
+        }
+
         public override void Draw(RenderTarget target)
         {
             for (int i = 0; i < _tiles.Length; i++)
@@ -304,6 +329,16 @@ namespace touhoujam5
                 tower.Draw(_renderTexture);
             }
 
+            if (CurrentlyPlacing != null)
+            {
+                CurrentlyPlacing.Position = Utils.Snap2Grid(Game.MousePosition);
+                var gridPos = Utils.Vf2Grid(CurrentlyPlacing.Position);
+                if (gridPos.X < _level.Data.GetLength(0) && gridPos.Y < _level.Data.GetLength(1))
+                {
+                    CurrentlyPlacing.Draw(_renderTexture, !CanPlaceTowerAt(CurrentlyPlacing.Position));
+                }
+            }
+
             foreach (var wave in Waves)
             {
                 wave.Draw(_renderTexture);
@@ -312,12 +347,6 @@ namespace touhoujam5
             foreach (var bullet in Bullets)
             {
                 bullet.Draw(_renderTexture);
-            }
-
-            if (CurrentlyPlacing != null)
-            {
-                CurrentlyPlacing.Position = Utils.Snap2Grid(Game.MousePosition);
-                CurrentlyPlacing.Draw(_renderTexture);
             }
 
             base.Draw(target);

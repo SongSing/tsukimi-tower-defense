@@ -13,6 +13,7 @@ namespace touhoujam5
         public Vector2i SizeTiles;
         public Vector2f Position;
         public Tower CurrentlyHovered;
+        public List<Tower> Allowed = new List<Tower>();
 
         public TowerInventory(Vector2f position, Vector2i sizeTiles) : base(Utils.Vi2u(sizeTiles * Game.TileSize), position)
         {
@@ -26,17 +27,19 @@ namespace touhoujam5
             Vector2f mousePos = Utils.Snap2Grid(Game.MousePosition);
             CurrentlyHovered = null;
 
-            foreach (Tower tower in Game.UnplacedTowers)
+            foreach (Tower tower in Allowed)
             {
                 float x = i % SizeTiles.X * Game.TileSize + Game.TileSize / 2;
-                float y = (i / SizeTiles.Y) * Game.TileSize + Game.TileSize / 2;
+                float y = (i / SizeTiles.X) * Game.TileSize + Game.TileSize / 2;
                 Vector2f towerPos = Position + new Vector2f(x, y);
                 if (mousePos == towerPos)
                 {
                     CurrentlyHovered = tower;
                     if (AKS.WasJustPressed(Mouse.Button.Left))
                     {
-                         Game.PlayArea.CurrentlyPlacing = tower;
+                        var toAdd = tower.CloneLevel0();
+                        Game.Towers.Add(toAdd);
+                        Game.PlayArea.CurrentlyPlacing = toAdd;
                     }
                     break;
                 }
@@ -46,19 +49,16 @@ namespace touhoujam5
 
         public override void Draw(RenderTarget target)
         {
-            _renderTexture.Clear(Color.Blue);
+            _renderTexture.Clear(new Color(20, 20, 20));
 
             int i = 0;
-            foreach (Tower tower in Game.UnplacedTowers)
+            foreach (Tower tower in Allowed)
             {
-                if (Game.PlayArea.CurrentlyPlacing != tower)
-                {
-                    float x = i % SizeTiles.X * Game.TileSize + Game.TileSize / 2;
-                    float y = (i / SizeTiles.Y) * Game.TileSize + Game.TileSize / 2;
-                    tower.Position = new Vector2f(x, y);
-                    tower.Draw(_renderTexture);
-                    i++;
-                }
+                float x = i % SizeTiles.X * Game.TileSize + Game.TileSize / 2;
+                float y = (i / SizeTiles.X) * Game.TileSize + Game.TileSize / 2;
+                tower.Position = new Vector2f(x, y);
+                tower.Draw(_renderTexture);
+                i++;
             }
 
             base.Draw(target);

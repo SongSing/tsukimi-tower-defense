@@ -10,14 +10,14 @@ namespace touhoujam5
 {
     class ReimuTower : Tower
     {
-        private int[] _numBullets = new int[] { 4, 4, 5, 6 };
+        private int[] _numBullets = new int[] { 3, 4, 5, 6 };
         public ReimuTower()
             : base("Content/towers.png", 0, "Reimu Hakurei",
                   "Fires homing bullets that\nseek the closest enemy.",
-                  new float[] { 100, 200, 500, 1500 },
-                  new float[] { 1, 1, 2, 3 },
-                  new float[] { 150, 200, 280, 400 },
-                  new float[] { 1, 3, 5, 10 })
+                  costs: new float[] { 200, 400, 1000, 5000 },
+                  shotRates: new float[] { 1.5f, 2, 3, 4 },
+                  ranges: new float[] { 100, 150, 250, 400 },
+                  strengths: new float[] { 1, 2, 5, 10 })
         {
 
         }
@@ -25,6 +25,11 @@ namespace touhoujam5
         public override string GetExtraInfo(int level)
         {
             return "Num Bullets: " + _numBullets[level].ToString();
+        }
+
+        public override Tower CloneLevel0()
+        {
+            return new ReimuTower();
         }
 
         protected override void Shoot(List<Creep> creepsInRange)

@@ -61,16 +61,19 @@ namespace touhoujam5
                 _text.DisplayedString = tower.Name + "\n" +
                     tower.Description + "\n\n" +
                     (tower.IsPlaced ? "Level: " + (tower.Level + 1).ToString() + "\n" : "") +
-                    (tower.Level + 1 == tower.NumLevels ? "" : "Cost" + (tower.IsPlaced ? " to Upgrade: " : ": ") + tower.Cost.ToString() + "\n") +
+                    (tower.IsPlaced ? "" : "Cost: " + tower.Cost.ToString() + "\n") +
                     "Range: " + tower.Range.ToString() + "\n" +
-                    "Fire Rate: " + tower.ShotRate.ToString() + "\n" +
+                    "Fire Rate: " + (tower.ShotRate >= 60 ? "--" : tower.ShotRate.ToString()) + "\n" +
+                    "Strength: " + tower.Strength.ToString() + "\n" +
                     tower.GetExtraInfo(tower.Level);
 
                 if (tower.Level + 1 != tower.NumLevels)
                 {
                     _text.DisplayedString += "\n\nNext Upgrade:\n" +
+                        "Cost: " + tower.UpgradeCost.ToString() + "\n" +
                         "Range: " + tower.NextRange.ToString() + "\n" +
-                        "Fire Rate: " + tower.NextShotRate.ToString() + "\n" +
+                        "Fire Rate: " + (tower.NextShotRate >= 60 ? "--" : tower.NextShotRate.ToString()) + "\n" +
+                        "Strength: " + tower.NextStrength.ToString() + "\n" +
                         tower.GetExtraInfo(tower.Level + 1);
                 }
             }
@@ -82,7 +85,7 @@ namespace touhoujam5
             _renderTexture.Clear();
             _renderTexture.Draw(_text);
 
-            if (Game.PlayArea.InfoTower != null && Game.PlayArea.InfoTower.Level + 1 != Game.PlayArea.InfoTower.NumLevels)
+            if (Game.PlayArea.InfoTower != null && Game.PlayArea.InfoTower.Level + 1 != Game.PlayArea.InfoTower.NumLevels && Game.PlayArea.InfoTower != Game.PlayArea.CurrentlyPlacing)
             {
                 _upgradeBackground.FillColor = Game.PlayArea.InfoTower.Cost <= Game.Money ? new Color(50, 150, 60, 255) : new Color(75, 75, 75, 255);
                 _upgradeText.FillColor = Game.PlayArea.InfoTower.Cost <= Game.Money ? Color.White : new Color(160, 160, 160);

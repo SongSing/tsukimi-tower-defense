@@ -1,4 +1,5 @@
-﻿using SFML;
+﻿
+using SFML;
 using SFML.Audio;
 using SFML.Graphics;
 using SFML.System;
@@ -26,8 +27,29 @@ namespace touhoujam5
             Cooldown = cooldown;
 
             _spawnCooldown = _toSpawn[0].Cooldown;
-            Creeps.Add(_toSpawn[0]);
-            _toSpawn.RemoveAt(0);
+            HandleSpawn();
+        }
+
+        private void HandleSpawn()
+        {
+            if (_toSpawn.Count > 0)
+            {
+                if (_spawnCounter >= _spawnCooldown)
+                {
+                    _spawnCooldown = _toSpawn[0].Cooldown;
+                    Creeps.Add(_toSpawn[0]);
+                    _toSpawn.RemoveAt(0);
+
+                    if (_spawnCooldown == 0)
+                    {
+                        HandleSpawn();
+                    }
+                    else
+                    {
+                        _spawnCounter %= _spawnCooldown;
+                    }
+                }
+            }
         }
 
         public void Update(float delta)
@@ -36,16 +58,7 @@ namespace touhoujam5
             _spawnCounter += delta;
 
             // spawn creeps //
-            if (_toSpawn.Count > 0)
-            {
-                if (_spawnCounter >= _spawnCooldown)
-                {
-                    _spawnCooldown = _toSpawn[0].Cooldown;
-                    Creeps.Add(_toSpawn[0]);
-                    _toSpawn.RemoveAt(0);
-                    _spawnCounter %= _spawnCooldown;
-                }
-            }
+            HandleSpawn();
             
             if (_toSpawn.Count == 0)
             {
@@ -84,28 +97,24 @@ namespace touhoujam5
         }
 
         /// <summary>
-        /// Test for collision. Will handle damaging and removing the creep if necessary, but will not destroy the bullet.
+        /// Test for collision. Returns whether or not testing should continue for the bullet.
         /// </summary>
         /// <param name="bullet"></param>
-        /// <returns>Whether or not a collision occured.</returns>
+        /// <returns></returns>
         public bool TryBullet(Bullet bullet)
         {
-            bool toReturn = false;
-
             foreach (Creep creep in Creeps)
             {
                 if (bullet.Intersects(creep))
                 {
-                    toReturn = true;
-                    creep.Damage(bullet);
-                    if (!bullet.IsPiercing)
+                    if (!bullet.OnCollide(creep))
                     {
-                        return true;
+                        return false;
                     }
                 }
             }
 
-            return toReturn;
+            return true;
         }
 
         public void CullDeadCreeps()

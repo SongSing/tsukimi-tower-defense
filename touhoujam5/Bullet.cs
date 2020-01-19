@@ -21,5 +21,22 @@ namespace touhoujam5
             Strength = strength;
             IsPiercing = isPiercing;
         }
+
+        /// <summary>
+        /// Handle collision with a creep. Returns whether or not testing should continue for this bullet.
+        /// </summary>
+        /// <param name="creep"></param>
+        /// <returns></returns>
+        public virtual bool OnCollide(Creep creep)
+        {
+            creep.Damage(this);
+
+            if (!this.IsPiercing)
+            {
+                ShouldBeCulled = true;
+            }
+
+            return this.IsPiercing;
+        }
     }
 }

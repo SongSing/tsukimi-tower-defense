@@ -17,7 +17,7 @@ namespace touhoujam5
         private float _slashWidth;
 
         public YoumuBullet(Vector2f pos, float strength, float slashWidth, Vector2f direction, bool directionSwitch)
-            : base(1, new Hitbox(new Vector2f(0, 0), 1), pos, strength, true)
+            : base(1, new Hitbox(new Vector2f(0, 0), 8), pos, strength, true)
         {
             if (directionSwitch)
             {
@@ -57,7 +57,7 @@ namespace touhoujam5
             float progress = _slashCounter / _slashDuration;
             float distanceToCover = Game.TileSize * _slashWidth;
 
-            this.Position = _initialPosition + (_direction * distanceToCover) * progress;
+            Position = _initialPosition + (_direction * distanceToCover) * progress;
 
             if (progress >= 1)
             {

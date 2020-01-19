@@ -10,34 +10,36 @@ namespace touhoujam5
 {
     abstract class Creep : HitboxHaver
     {
+        private float _baseMoveSpeed;
         public float Hp { get; protected set; }
-        public float MoveSpeed { get; protected set; }
+        public float MoveSpeed => _baseMoveSpeed * MoveSpeedModifier;
+        public float MoveSpeedModifier { get; set; }
         public float Cooldown { get; protected set; }
-        public abstract float Worth { get; }
+        public float Worth { get; protected set; }
         public bool HasReachedEnd = false;
         public bool HasDied = false;
+        public float PathProgress => (float)_pathIndex / _path.Length + _moveProgress * (1 / _path.Length);
 
         private float _maxHp;
         private float _moveProgress = 0;
         private Vector2i[] _path;
-        private int _index;
+        private int _pathIndex;
         private List<Bullet> _beenHitBy = new List<Bullet>();
 
         private RectangleShape _hpBackground, _hpForeground;
 
-        protected Creep(string texturePath, int textureIndex, Level level, Hitbox hitbox, float hp, float moveSpeed, float cooldown)
+        protected Creep(string texturePath, int textureIndex, Level level, Hitbox hitbox, float hp, float worth, float moveSpeed, float cooldown, int startIndex)
             : base(texturePath, textureIndex, hitbox)
         {
             _maxHp = Hp = hp;
-            MoveSpeed = moveSpeed;
+            _baseMoveSpeed = moveSpeed;
+            MoveSpeedModifier = 1;
             Cooldown = cooldown;
+            Worth = worth;
 
-            int startIndex = Distributor.GetNext(level.StartPositions().Length, -1);
-            int endIndex = Distributor.GetNext(level.EndPositions().Length, -2);
+            _path = PathFinder.FindPath(level, startIndex);
 
-            _path = PathFinder.FindPath(level, startIndex, endIndex);
-
-            var pos = level.StartPositions()[startIndex];
+            var pos = _path[0];
             Position = Utils.Grid2f(pos);
 
             _hpBackground = new RectangleShape(new Vector2f(Game.TileSize, 8));
@@ -54,7 +56,7 @@ namespace touhoujam5
 
         public override void Update(float delta)
         {
-            if (_index == _path.Length)
+            if (_pathIndex == _path.Length)
             {
                 return;
             }
@@ -63,17 +65,17 @@ namespace touhoujam5
             if (_moveProgress >= 1)
             {
                 _moveProgress %= 1;
-                _index++;
+                _pathIndex++;
 
-                if (_index == _path.Length - 1)
+                if (_pathIndex == _path.Length - 1)
                 {
                     HasReachedEnd = true;
                     return;
                 }
             }
 
-            Vector2f pos = Utils.Grid2f(_path[_index]);
-            Vector2f movingToward = Utils.Grid2f(_path[_index + 1]);
+            Vector2f pos = Utils.Grid2f(_path[_pathIndex]);
+            Vector2f movingToward = Utils.Grid2f(_path[_pathIndex + 1]);
             Vector2f vDelta = movingToward - pos;
 
             Vector2f actualPos = pos + vDelta * (_moveProgress);

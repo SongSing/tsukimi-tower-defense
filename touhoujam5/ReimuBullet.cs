@@ -11,14 +11,30 @@ namespace touhoujam5
     class ReimuBullet : Bullet
     {
         private float _angle;
+        private Creep _targetCreep;
 
-        public ReimuBullet(Vector2f position, float angle, float strength) : base(0, new Hitbox(new Vector2f(0, 0), 8), position, strength, false)
+        public ReimuBullet(Vector2f position, float angle, float strength) : base(0, new Hitbox(new Vector2f(0, 0), 10), position, strength, false)
         {
             _angle = angle;
+            _sprite.Color = new Color(255, 255, 255, 180);
+        }
+
+        public override bool OnCollide(Creep creep)
+        {
+            if (creep == _targetCreep)
+            {
+                return base.OnCollide(creep);
+            }
+            else
+            {
+                return true;
+            }
         }
 
         public override void Update(float delta)
         {
+            _sprite.Rotation += delta * 180;
+
             var creeps = Game.PlayArea.GetCreeps();
 
             if (creeps.Count > 0)
@@ -37,6 +53,8 @@ namespace touhoujam5
                         closest = creep;
                     }
                 }
+
+                _targetCreep = closest;
 
                 float angle = AngleTo(closest);
                 float deltaAngle = angle - _angle;

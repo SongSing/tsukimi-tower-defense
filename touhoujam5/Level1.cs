@@ -17,12 +17,12 @@ namespace touhoujam5
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 3 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, R, R, R, R, R, D, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, U, R, R, R, D, D, 0, 0, 0, 0, 0, 0, 0 },
+            {S|R,R, R, R, R, R, R,U|R,U, 0, 0, R, R, R, R, R, R, R, R, E },
+            {S|R,R, R, R, R, R, R,D|R,D, 0, 0, R, R, R, R, R, R, R, R, E },
+            { 0, 0, 0, 0, 0, 0, 0, D, R, R, R, U, U, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, R, R, R, R, R, U, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -35,6 +35,7 @@ namespace touhoujam5
         public override int[,] Data => _data;
         public override int NumWaves => 3;
         public override float Hp => 100;
+        public override float Reward => base.Reward + 400;
 
         public override CreepWave[] Waves => new CreepWave[]
         {
@@ -50,29 +51,32 @@ namespace touhoujam5
             switch (level)
             {
                 case 0:
-                {
-                    for (int i = 0; i < 10; i++)
                     {
-                        ret.Add(new FairyCreep1(this));
-                    }
-                    break;
+                        for (int i = 0; i < 5; i++)
+                        {
+                            ret.Add(new TaroCreep(this, 13, 15, 0.8f, 0, 0));
+                            ret.Add(new TaroCreep(this, 13, 15, 0.8f, 1, 1.5f));
+                        }
+                        break;
                     }
                 case 1:
-                {
-                    for (int i = 0; i < 20; i++)
                     {
-                        ret.Add(new FairyCreep1(this));
+                        for (int i = 0; i < 10; i++)
+                        {
+                            ret.Add(new TaroCreep(this, 13, 15, 0.8f, 0, 0));
+                            ret.Add(new TaroCreep(this, 13, 15, 0.8f, 1, 1.5f));
+                        }
+                        break;
                     }
-                    break;
-                }
                 case 2:
-                {
-                    for (int i = 0; i < 15; i++)
                     {
-                        ret.Add(new FairyCreep2(this));
+                        for (int i = 0; i < 7; i++)
+                        {
+                            ret.Add(new ChestnutCreep(this, 25, 25, 0.6f, 0, 0));
+                            ret.Add(new ChestnutCreep(this, 25, 25, 0.6f, 1, 1));
+                        }
+                        break;
                     }
-                    break;
-                }
             }
 
 

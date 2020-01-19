@@ -10,6 +10,13 @@ namespace touhoujam5
 {
     abstract class Level
     {
+        public static int S = 0b00000001;
+        public static int U = 0b00000010;
+        public static int D = 0b00000100;
+        public static int L = 0b00001000;
+        public static int R = 0b00010000;
+        public static int E = 0b00100000;
+
         public static int[,] Transpose(int[,] data)
         {
             int[,] ret = new int[data.GetLength(1), data.GetLength(0)];
@@ -35,7 +42,7 @@ namespace touhoujam5
         }
         public abstract int NumWaves { get; }
 
-        public Vector2i[] PositionsEqualTo(int num)
+        public Vector2i[] PositionsWith(int flag)
         {
             List<Vector2i> ret = new List<Vector2i>();
             int[,] levelData = Data;
@@ -44,7 +51,7 @@ namespace touhoujam5
             {
                 for (int y = 0; y < levelData.GetLength(1); y++)
                 {
-                    if (Data[x, y] == num)
+                    if ((Data[x, y] & flag) != 0)
                     {
                         ret.Add(new Vector2i(x, y));
                     }
@@ -56,12 +63,12 @@ namespace touhoujam5
 
         public Vector2i[] StartPositions()
         {
-            return PositionsEqualTo(2);
+            return PositionsWith(S);
         }
 
         public Vector2i[] EndPositions()
         {
-            return PositionsEqualTo(3);
+            return PositionsWith(E);
         }
     }
 }

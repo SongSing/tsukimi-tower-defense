@@ -86,6 +86,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AKS.cs" />
+    <Compile Include="AliceDoll.cs" />
+    <Compile Include="AliceTower.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Creep.cs" />
@@ -93,8 +95,10 @@
     <Compile Include="Distributor.cs" />
     <Compile Include="Drawable.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="FairyCreep1.cs" />
-    <Compile Include="FairyCreep2.cs" />
+    <Compile Include="GameOverScreen.cs" />
+    <Compile Include="TaroCreep.cs" />
+    <Compile Include="ChestnutCreep.cs" />
+    <Compile Include="EdamameCreep.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Hitbox.cs" />
     <Compile Include="HitboxHaver.cs" />
@@ -103,13 +107,13 @@
     <Compile Include="Level.cs" />
     <Compile Include="Level2.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="TitleScreen.cs" />
     <Compile Include="MarisaTower.cs" />
     <Compile Include="PathFinder.cs" />
     <Compile Include="PlayArea.cs" />
     <Compile Include="ReimuBullet.cs" />
     <Compile Include="ReimuTower.cs" />
     <Compile Include="Resources.cs" />
-    <Compile Include="TouristCreep.cs" />
     <Compile Include="Tower.cs" />
     <Compile Include="TowerInventory.cs" />
     <Compile Include="Utils.cs" />
@@ -117,6 +121,9 @@
     <Compile Include="YoumuTower.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\bgm.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bullets.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -126,11 +133,14 @@
     <Content Include="Content\tiles.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\titlescreen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\towers.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="csfml-Audio.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="csfml-Graphics.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -142,6 +152,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="MarisaLaser.cs" />
+    <Content Include="openal32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

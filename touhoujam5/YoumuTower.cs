@@ -10,22 +10,26 @@ namespace touhoujam5
 {
     class YoumuTower : Tower
     {
-
         private bool _directionSwitch = false;
-        private float[] _slashWidths = new float[] { 1.5f, 2, 2.5f, 3 };
+        private float[] _slashWidths = new float[] { 1.5f, 2.5f, 3.5f, 5 };
 
         public YoumuTower()
             : base("Content/towers.png", 1, "Youmu Konpaku",
                   "Slashes at adjacent enemies\nwith a sword.",
-                  new float[] { 100, 300, 1000, 3000 }, // cost
-                  new float[] { 2, 2.5f, 3, 3.5f }, // fire rate
-                  new float[] { 44, 44, 44, 44 }, // range
-                  new float[] { 2, 2.5f, 4, 5 }) // strength
+                  costs: new float[] { 200, 300, 1000, 3000 },
+                  shotRates: new float[] { 2, 2.5f, 3, 4 },
+                  ranges: new float[] { 44, 44, 44, 44 },
+                  strengths: new float[] { 2, 5, 20, 50 })
         { }
 
         public override string GetExtraInfo(int level)
         {
             return "Slash Width: " + _slashWidths[level].ToString();
+        }
+
+        public override Tower CloneLevel0()
+        {
+            return new YoumuTower();
         }
 
         protected override void Shoot(List<Creep> creepsInRange)

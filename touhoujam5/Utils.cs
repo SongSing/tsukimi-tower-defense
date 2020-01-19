@@ -49,6 +49,25 @@ namespace touhoujam5
             return new Vector2i((int)v.X / Game.TileSize, (int)v.Y / Game.TileSize);
         }
 
+        public static float AngleBetween (Vector2f a, Vector2f b)
+        {
+            var delta = b - a;
+            return (float)Math.Atan2(delta.Y, delta.X);
+        }
+
+        public static float DistanceBetween(Vector2f a, Vector2f b)
+        {
+            var term1 = Math.Pow(b.X - a.X, 2);
+            var term2 = Math.Pow(b.Y - a.Y, 2);
+            float dist = (float)Math.Sqrt(term1 + term2);
+            return dist;
+        }
+
+        public static Vector2f VectorFromAngle(float angle)
+        {
+            return new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle));
+        }
+
         public static Vector2f[] Laser2Points(Vector2f startPos, Vector2f endPos, float width, float angle)
         {
             float rightAngle = angle - (float)Math.PI / 2;
@@ -133,8 +152,11 @@ namespace touhoujam5
 
         public static bool PointIsInRect(Vector2i point, RectangleShape rect)
         {
-            return point.X >= rect.Position.X && point.X <= rect.Position.X + rect.Size.X &&
-                point.Y >= rect.Position.Y && point.Y <= rect.Position.Y + rect.Size.Y;
+            RectangleShape translatedRect = new RectangleShape(rect);
+            translatedRect.Position -= rect.Origin;
+
+            return point.X >= translatedRect.Position.X && point.X <= translatedRect.Position.X + translatedRect.Size.X &&
+                point.Y >= translatedRect.Position.Y && point.Y <= translatedRect.Position.Y + translatedRect.Size.Y;
         }
 }
 }
