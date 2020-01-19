@@ -104,7 +104,7 @@ namespace touhoujam5
             _finishedWaves.Clear();
             _bulletsToRemove.Clear();
             Bullets.Clear();
-            Game.Towers.Clear();
+            Game.RemoveAllTowers();
             Distributor.Reset();
             Waves.Clear();
             _waveToSpawn = null;
@@ -161,7 +161,7 @@ namespace touhoujam5
                 }
                 else if (AKS.WasJustReleased(Mouse.Button.Right))
                 {
-                    Game.Towers.Remove(CurrentlyPlacing);
+                    Game.RemoveTower(CurrentlyPlacing);
                     CurrentlyPlacing = null;
                 }
             }
@@ -192,6 +192,12 @@ namespace touhoujam5
                 {
                     CurrentlySelected = null;
                 }
+            }
+
+            var upgradeCandidate = CurrentlyHovered ?? CurrentlySelected;
+            if (upgradeCandidate != null && AKS.WasJustPressed(Keyboard.Key.U))
+            {
+                Game.TryUpgradeTower(upgradeCandidate);
             }
 
             if (!IsStarted || IsPaused) return;
@@ -244,23 +250,30 @@ namespace touhoujam5
 
                 foreach (var bullet in Bullets)
                 {
-                    bullet.Update(delta);
-
                     if (bullet.ShouldBeCulled)
                     {
                         _bulletsToRemove.Add(bullet);
                     }
-                    if (bullet.IsCollidable)
+                    else
                     {
-                        foreach (var wave in Waves)
+                        bullet.Update(delta);
+
+                        if (bullet.ShouldBeCulled)
                         {
-                            if (!wave.TryBullet(bullet))
+                            _bulletsToRemove.Add(bullet);
+                        }
+                        if (bullet.IsCollidable)
+                        {
+                            foreach (var wave in Waves)
                             {
-                                if (bullet.ShouldBeCulled)
+                                if (!wave.TryBullet(bullet))
                                 {
-                                    _bulletsToRemove.Add(bullet);
+                                    if (bullet.ShouldBeCulled)
+                                    {
+                                        _bulletsToRemove.Add(bullet);
+                                    }
+                                    continue;
                                 }
-                                continue;
                             }
                         }
                     }
@@ -311,7 +324,7 @@ namespace touhoujam5
         public bool CanPlaceTowerAt(Vector2f snappedPos)
         {
             var gridPos = Utils.Vf2Grid(snappedPos);
-            return gridPos.X < _level.Data.GetLength(0) && gridPos.Y < _level.Data.GetLength(1) &&
+            return gridPos.X >= 0 && gridPos.Y >= 0 && gridPos.X < _level.Data.GetLength(0) && gridPos.Y < _level.Data.GetLength(1) &&
                 _level.Data[gridPos.X, gridPos.Y] == 0 &&
                 CurrentlyPlacing.Cost <= Game.Money &&
                 !Game.Towers.Exists(tower => tower.IsPlaced && tower.Position == snappedPos);
@@ -324,24 +337,31 @@ namespace touhoujam5
                 _renderTexture.Draw(_tiles[i]);
             }
 
-            foreach (var tower in Game.PlacedTowers)
+            foreach (var wave in Waves)
             {
-                tower.Draw(_renderTexture);
+                wave.Draw(_renderTexture);
+            }
+
+            var shouldBeRed = false;
+            if (CurrentlyPlacing != null)
+            {
+                CurrentlyPlacing.Position = Utils.Snap2Grid(Game.MousePosition);
+                shouldBeRed = !CanPlaceTowerAt(CurrentlyPlacing.Position);
+            }
+
+            if (InfoTower != null)
+            {
+                InfoTower.DrawRange(_renderTexture, shouldBeRed);
             }
 
             if (CurrentlyPlacing != null)
             {
-                CurrentlyPlacing.Position = Utils.Snap2Grid(Game.MousePosition);
-                var gridPos = Utils.Vf2Grid(CurrentlyPlacing.Position);
-                if (gridPos.X < _level.Data.GetLength(0) && gridPos.Y < _level.Data.GetLength(1))
-                {
-                    CurrentlyPlacing.Draw(_renderTexture, !CanPlaceTowerAt(CurrentlyPlacing.Position));
-                }
+                CurrentlyPlacing.Draw(_renderTexture, shouldBeRed);
             }
 
-            foreach (var wave in Waves)
+            foreach (var tower in Game.PlacedTowers)
             {
-                wave.Draw(_renderTexture);
+                tower.Draw(_renderTexture);
             }
 
             foreach (var bullet in Bullets)

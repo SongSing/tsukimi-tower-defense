@@ -54,6 +54,31 @@ namespace touhoujam5
             }
         }
 
+        public static void TryUpgradeTower(Tower tower)
+        {
+            if (tower.Level != tower.NumLevels - 1 && tower.Cost <= Money)
+            {
+                Money -= tower.Cost;
+                tower.LevelUp();
+            }
+        }
+
+        public static void RemoveTower(Tower t)
+        {
+            t.BeforeRemove();
+            Towers.Remove(t);
+        }
+
+        public static void RemoveAllTowers()
+        {
+            foreach (Tower tower in Towers)
+            {
+                tower.BeforeRemove();
+            }
+
+            Towers.Clear();
+        }
+
         public static Vector2i MousePosition => Mouse.GetPosition(Window);
         public static Vector2f MousePositionf => Utils.Vi2f(Mouse.GetPosition(Window));
 
@@ -174,11 +199,13 @@ namespace touhoujam5
 
             Music = new Music("Content/bgm.ogg");
             Music.Loop = true;
-            Music.Volume = 0;
+            Music.Volume = DefaultMusicVolume;
             Music.Play();
 
             AKS.WatchKey(Keyboard.Key.M);
+            AKS.WatchKey(Keyboard.Key.U);
             AKS.WatchKey(Keyboard.Key.R);
+            AKS.WatchKey(Keyboard.Key.P);
 
             this.Run();
         }
@@ -272,6 +299,7 @@ namespace touhoujam5
                 case 0:
                     _inventory.Allowed.Add(new MarisaTower());
                     _inventory.Allowed.Add(new AliceTower());
+                    Money = 1500;
                     TextQueue.AddRange(new string[]
                     {
                         "Reimu: This is scary... food isn't supposed to fight back...",
@@ -288,7 +316,8 @@ namespace touhoujam5
 
             if (CurrentLevelNum == Levels.Length - 1)
             {
-                // TODO: U WIN
+                IsGameOver = true;
+                GameOverScreen.IsWinScreen = true;
             }
             else
             {
@@ -312,11 +341,13 @@ namespace touhoujam5
                     if (GameOverScreen.Choice == GameOverScreen.ChoiceOption.RetryLevel)
                     {
                         IsGameOver = false;
+                        GameOverScreen.IsWinScreen = false;
                         ReloadLevel();
                     }
                     else if (GameOverScreen.Choice == GameOverScreen.ChoiceOption.ReturnToTitle)
                     {
                         IsGameOver = false;
+                        GameOverScreen.IsWinScreen = false;
                         ReturnToTitle();
                     }
                 }
@@ -355,7 +386,8 @@ namespace touhoujam5
                                 AdvanceLevel();
                             }
 
-                            if (AKS.WasJustPressed(Mouse.Button.Left) && Utils.PointIsInRect(MousePosition, _startBackground))
+                            if ((AKS.WasJustPressed(Mouse.Button.Left) && Utils.PointIsInRect(MousePosition, _startBackground)) ||
+                                AKS.WasJustPressed(Keyboard.Key.P))
                             {
                                 if (_playArea.IsStarted)
                                 {
@@ -402,7 +434,7 @@ namespace touhoujam5
                     _moneyText.Origin = Utils.RoundV(new Vector2f(_moneyText.GetLocalBounds().Width / 2, _moneyText.GetLocalBounds().Height / 2));
                     window.Draw(_moneyText);
 
-                    _startText.DisplayedString = PlayArea.IsStarted ? (PlayArea.IsPaused ? "Resume" : "Pause") : "Start";
+                    _startText.DisplayedString = PlayArea.IsStarted ? (PlayArea.IsPaused ? "Resume (P)" : "Pause (P)") : "Start (P)";
                     _startText.Origin = Utils.RoundV(new Vector2f(_startText.GetLocalBounds().Width / 2, _moneyText.GetLocalBounds().Height / 2));
                     window.Draw(_startText);
 

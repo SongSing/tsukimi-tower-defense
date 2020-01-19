@@ -36,7 +36,7 @@ namespace touhoujam5
         public abstract float Hp { get; }
         public virtual float Reward => Hp;
         public int NextWave = 0;
-        public CreepWave SpawnWave()
+        public virtual CreepWave SpawnWave()
         {
             return Waves[NextWave++];
         }

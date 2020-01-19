@@ -33,15 +33,40 @@ namespace touhoujam5
         });
 
         public override int[,] Data => _data;
-        public override int NumWaves => 3;
-        public override float Hp => 100;
+        public override int NumWaves => 9;
+        public override float Hp => 100000;
 
         public override CreepWave[] Waves => new CreepWave[]
         {
-            new CreepWave(40, GenCreeps(0)),
-            new CreepWave(20, GenCreeps(1)),
-            new CreepWave(5, GenCreeps(2))
+            new CreepWave(20, GenCreeps(0)),
+            new CreepWave(8, GenCreeps(1)),
+            new CreepWave(15, GenCreeps(2)),
+            new CreepWave(15, GenCreeps(3)),
+            new CreepWave(15, GenCreeps(4)),
+            new CreepWave(7, GenCreeps(5)),
+            new CreepWave(15, GenCreeps(6)),
+            new CreepWave(15, GenCreeps(7)),
+            new CreepWave(15, GenCreeps(8))
         };
+
+        public override CreepWave SpawnWave()
+        {
+            if (NextWave == NumWaves - 1)
+            {
+                Game.TextQueue.AddRange(new string[]
+                {
+                    "Youmu: Uh oh.\nYukari says there's an abnormally strong youkai approaching.",
+                    "Reimu: Stronger than the edamame??",
+                    "Alice: Those weren't that much trouble, Reimu...",
+                    "Youmu: Does anyone know of any unusual food offered to the moon?",
+                    "Reimu: ...",
+                    "Marisa: Spit it out, Reimu!!",
+                    "Reimu: I had an old orange in my lunch box...",
+                    "Everyone: REIMU!!!"
+                });
+            }
+            return base.SpawnWave();
+        }
 
         private List<Creep> GenCreeps(int level)
         {
@@ -53,8 +78,8 @@ namespace touhoujam5
                     {
                         for (int i = 0; i < 10; i++)
                         {
-                            ret.Add(new TaroCreep(this, 40, 40, 0.8f, 0, 0));
-                            ret.Add(new TaroCreep(this, 40, 40, 0.8f, 1, 1.5f));
+                            ret.Add(new TaroCreep(this, 40, 40, 0.9f, 0, 0));
+                            ret.Add(new TaroCreep(this, 40, 40, 0.9f, 1, 1.5f));
                         }
                         break;
                     }
@@ -62,16 +87,91 @@ namespace touhoujam5
                     {
                         for (int i = 0; i < 10; i++)
                         {
-                            ret.Add(new EdamameCreep(this, 15, 30, 4f, 0, 0));
-                            ret.Add(new EdamameCreep(this, 15, 30, 4f, 1, 0));
-                            ret.Add(new ChestnutCreep(this, 30, 40, 0.6f, 0, 0));
-                            ret.Add(new ChestnutCreep(this, 40, 40, 0.6f, 1, 1.5f));
+                            ret.Add(new EdamameCreep(this, 15, 20, 3.5f, 0, 0));
+                            ret.Add(new EdamameCreep(this, 15, 20, 3.5f, 1, 0));
+                            ret.Add(new ChestnutCreep(this, 100, 80, 0.7f, 0, 0));
+                            ret.Add(new ChestnutCreep(this, 100, 80, 0.7f, 1, 1.5f));
                         }
                         break;
                     }
                 case 2:
                     {
-                        ret.Add(new ChestnutCreep(this, 1000, 1, 0.1f, 0, 1));
+                        ret.Add(new ChestnutCreep(this, 1000, 100, 0.7f, 0, 1));
+                        break;
+                    }
+                case 3:
+                    {
+                        for (int i = 0; i < 15; i++)
+                        {
+                            ret.AddRange(new Creep[]
+                            {
+                                new TaroCreep(this, 100, 75, 0.9f, 0, 0),
+                                new TaroCreep(this, 100, 75, 0.9f, 1, 1.5f),
+                                new ChestnutCreep(this, 150, 100, 0.8f, 0, 0),
+                                new ChestnutCreep(this, 150, 100, 0.8f, 1, 1.5f)
+                            });
+                        }
+                        break;
+                    }
+                case 4:
+                    {
+                        for (int i = 0; i < 15; i++)
+                        {
+                            ret.AddRange(new Creep[]
+                            {
+                                new TaroCreep       (this, 300, 100, 1.1f, 0, 1.5f),
+                                new ChestnutCreep   (this, 250, 125, 1.1f, 1, 1.5f),
+                                new TaroCreep       (this, 300, 100, 1.1f, 0, 1.5f),
+                                new ChestnutCreep   (this, 250, 125, 1.1f, 1, 1.5f)
+                            });
+                        }
+                        break;
+                    }
+                case 5:
+                    {
+                        for (int i = 0; i < 20; i++)
+                        {
+                            ret.AddRange(new Creep[]
+                            {
+                                new EdamameCreep(this, 180, 200, 2.8f, 0, 1f),
+                                new EdamameCreep(this, 180, 200, 2.8f, 1, 1f),
+                            });
+                        }
+                        break;
+                    }
+                case 6:
+                    {
+                        for (int i = 0; i < 20; i++)
+                        {
+                            ret.AddRange(new Creep[]
+                            {
+                                new ChestnutCreep   (this, 1000, 250, 1.2f, 0, 1.1f),
+                                new TaroCreep       (this, 600, 150, 1.2f, 1, 1.1f),
+                                new ChestnutCreep   (this, 1000, 250, 1.2f, 0, 1.1f),
+                                new TaroCreep       (this, 600, 150, 1.2f, 1, 1.1f)
+                            });
+                        }
+                        break;
+                    }
+                case 7:
+                    {
+                        for (int i = 0; i < 20; i++)
+                        {
+                            ret.AddRange(new Creep[]
+                            {
+                                new EdamameCreep    (this, 600, 150, 2.8f, 0, 0),
+                                new EdamameCreep    (this, 600, 150, 2.8f, 0, 0),
+                                new ChestnutCreep   (this, 2000, 250, 1.2f, 0, 1.0f),
+                                new ChestnutCreep   (this, 2000, 250, 1.2f, 1, 1.0f),
+                                new TaroCreep       (this, 1500, 150, 1.2f, 0, 1.0f),
+                                new TaroCreep       (this, 1500, 150, 1.2f, 1, 1.0f),
+                            });
+                        }
+                        break;
+                    }
+                case 8:
+                    {
+                        ret.Add(new OrangeCreep(this, 50000, 1, 1.2f, 1, 1));
                         break;
                     }
             }

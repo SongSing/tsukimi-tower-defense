@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{073D2310-9E72-40DE-BA73-51C81F2EA2F6}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>touhoujam5</RootNamespace>
     <AssemblyName>touhoujam5</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -96,6 +96,7 @@
     <Compile Include="Drawable.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GameOverScreen.cs" />
+    <Compile Include="OrangeCreep.cs" />
     <Compile Include="TaroCreep.cs" />
     <Compile Include="ChestnutCreep.cs" />
     <Compile Include="EdamameCreep.cs" />
@@ -128,6 +129,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\creeps.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\levels.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\tiles.png">

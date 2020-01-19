@@ -49,6 +49,8 @@ namespace touhoujam5
                 _sprite.Rotation = 90;
             }
 
+            _sprite.Color = new Color(255, 255, 255, 150);
+
             _slashWidth = slashWidth;
         }
 

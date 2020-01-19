@@ -11,6 +11,7 @@ namespace touhoujam5
     class GameOverScreen : Entity
     {
         public bool ReadyToStart = false;
+        public bool IsWinScreen = false;
         private RectangleShape _retryLevelBackground, _returnToTitleBackground;
         private Text _retryLevelText, _returnToTitleText, _gameOverText;
         public enum ChoiceOption
@@ -71,6 +72,9 @@ namespace touhoujam5
 
         public void Draw(RenderTarget target)
         {
+            _gameOverText.DisplayedString = IsWinScreen ? "You Won!" : "Game Over :(";
+            _gameOverText.Origin = Utils.RoundV(new Vector2f(_gameOverText.GetLocalBounds().Width / 2, 11));
+
             if (Utils.PointIsInRect(Game.MousePosition, _retryLevelBackground))
             {
                 _retryLevelBackground.FillColor = Color.White;

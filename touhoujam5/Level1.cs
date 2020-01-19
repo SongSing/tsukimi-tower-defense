@@ -35,7 +35,7 @@ namespace touhoujam5
         public override int[,] Data => _data;
         public override int NumWaves => 3;
         public override float Hp => 100;
-        public override float Reward => base.Reward + 400;
+        public override float Reward => 600;
 
         public override CreepWave[] Waves => new CreepWave[]
         {

@@ -96,7 +96,7 @@ namespace touhoujam5
                 _sprite.Scale = new Vector2f(Width / Game.TileSize, distance / Game.TileSize);
                 _sprite.Rotation = angle / (float)Math.PI * 180 + 90;
                 _sprite.Position = ParentTower.Position + (TargetCreep.HitboxPosition - ParentTower.Position) / 2;
-                _sprite.Color = new Color(255, 255, 255, (byte)(255 - ParentTower.Level * 25));
+                _sprite.Color = new Color(255, 255, 255, (byte)(200 - ParentTower.Level * 40));
 
                 //var points = Utils.Laser2Points(ParentTower.Position, TargetCreep.HitboxPosition, Width, angle);
 

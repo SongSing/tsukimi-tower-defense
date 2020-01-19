@@ -11,12 +11,12 @@ namespace touhoujam5
     class YoumuTower : Tower
     {
         private bool _directionSwitch = false;
-        private float[] _slashWidths = new float[] { 1.5f, 2.5f, 3.5f, 5 };
+        private float[] _slashWidths = new float[] { 1.5f, 2f, 3f, 4f };
 
         public YoumuTower()
             : base("Content/towers.png", 1, "Youmu Konpaku",
                   "Slashes at adjacent enemies\nwith a sword.",
-                  costs: new float[] { 200, 300, 1000, 3000 },
+                  costs: new float[] { 200, 400, 1500, 2500 },
                   shotRates: new float[] { 2, 2.5f, 3, 4 },
                   ranges: new float[] { 44, 44, 44, 44 },
                   strengths: new float[] { 2, 5, 20, 50 })
@@ -70,8 +70,6 @@ namespace touhoujam5
                     direction = new Vector2f(1, 0); // slash sidewards
                 }
             }
-
-            Console.WriteLine(xDist.ToString() + " / " + yDist.ToString() + " / " + direction.ToString());
 
             var bullet = new YoumuBullet(posToTarget, Strength, _slashWidths[Level], direction, _directionSwitch = !_directionSwitch);
             Game.PlayArea.Bullets.Add(bullet);

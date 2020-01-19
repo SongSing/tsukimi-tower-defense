@@ -39,10 +39,12 @@ namespace touhoujam5
         public int Level { get; protected set; }
         public int NumLevels => _costs.Length;
 
+        protected virtual bool ShouldShootEvenIfNoCreepsInRange => false;
+
         private float _shotCounter = 0;
         private float[] _ranges, _shotRates, _costs, _strengths;
         private CircleShape _rangeShape;
-
+        private Sprite _levelSprite;
 
         protected Tower(string texturePath, int textureIndex, string name, string description, float[] costs, float[] shotRates, float[] ranges, float[] strengths)
             : base(texturePath, textureIndex)
@@ -63,9 +65,18 @@ namespace touhoujam5
                 OutlineThickness = 2,
                 Origin = new Vector2f(Range, Range)
             };
+
+            _levelSprite = new Sprite(Resources.Texture("Content/levels.png"));
+            _levelSprite.TextureRect = new IntRect(0, 0, Game.TileSize, Game.TileSize);
+            _levelSprite.Origin = _sprite.Origin;
         }
 
         public virtual void OnPlace()
+        {
+            _levelSprite.Position = Position;
+        }
+
+        public virtual void BeforeRemove()
         {
 
         }
@@ -89,7 +100,7 @@ namespace touhoujam5
                 _shotCounter %= goal;
                 var creepsInRange = GetCreepsInRange();
 
-                if (creepsInRange.Count > 0)
+                if (creepsInRange.Count > 0 || ShouldShootEvenIfNoCreepsInRange)
                 {
                     Shoot(creepsInRange);
                 }
@@ -121,13 +132,31 @@ namespace touhoujam5
                 _rangeShape.OutlineColor = new Color(255, 255, 255, 255);
             }
 
-            if (Game.PlayArea.InfoTower == this)
-            {
-                _rangeShape.Position = Position;
-                target.Draw(_rangeShape);
-            }
-
             base.Draw(target);
+
+            if (IsPlaced)
+            {
+                if (Level == NumLevels - 1)
+                {
+                    _levelSprite.Color = new Color(215, 0, 255);
+                }
+                else if (Game.Money >= Cost)
+                {
+                    _levelSprite.Color = new Color(255, 215, 0);
+                }
+                else
+                {
+                    _levelSprite.Color = Color.White;
+                }
+
+                target.Draw(_levelSprite);
+            }
+        }
+
+        public void DrawRange(RenderTarget target, bool shouldBeRed = false)
+        {
+            _rangeShape.Position = Position;
+            target.Draw(_rangeShape);
         }
 
         public virtual void LevelUp()
@@ -137,6 +166,7 @@ namespace touhoujam5
                 Level++;
                 _rangeShape.Radius = Range;
                 _rangeShape.Origin = new Vector2f(Range, Range);
+                _levelSprite.TextureRect = new IntRect(Game.TileSize * Level, 0, Game.TileSize, Game.TileSize);
             }
         }
     }

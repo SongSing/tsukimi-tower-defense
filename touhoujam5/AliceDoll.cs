@@ -22,6 +22,8 @@ namespace touhoujam5
         private AliceTower _parentTower;
         private Vector2f _chaseStartingPosition;
 
+        public float SlowModifier => _parentTower.SlowModifier;
+
         public AliceDoll(AliceTower parentTower, float strength, float damageRate)
             : base(3, new Hitbox(new Vector2f(0, 0), 8), parentTower.Position, strength, true)
         {
@@ -29,16 +31,32 @@ namespace touhoujam5
             _parentTower = parentTower;
         }
 
-        public void FindNewTargetIfNeeded(List<Creep> candidates, List<Creep> ignore)
+        public void Kill()
         {
-            if (TargetCreep == null || (TargetCreep != null && TargetCreep.HasDied))
+            ShouldBeCulled = true;
+            _isAttached = false;
+            if (TargetCreep != null && TargetCreep.AttachedDolls.Contains(this))
             {
-                FindNewTarget(candidates, ignore);
+                TargetCreep.AttachedDolls.Remove(this);
+            }
+        }
+
+        public void FindNewTargetIfNeeded(List<Creep> creepsInRange, List<Creep> ignore)
+        {
+            if (!ShouldBeCulled && (TargetCreep != null && !creepsInRange.Contains(TargetCreep)) ||
+                TargetCreep == null || (TargetCreep != null && TargetCreep.HasDied))
+            {
+                FindNewTarget(creepsInRange, ignore);
             }
         }
 
         private void FindNewTarget(List<Creep> candidates, List<Creep> ignore)
         {
+            if (TargetCreep != null && TargetCreep.AttachedDolls.Contains(this))
+            {
+                TargetCreep.AttachedDolls.Remove(this);
+            }
+
             _isAttached = false;
             var creeps = new List<Creep>(candidates);
             creeps.RemoveAll(creep => ignore.Contains(creep));
@@ -61,7 +79,7 @@ namespace touhoujam5
                 }
 
                 TargetCreep = fastest;
-                TargetCreep.MoveSpeedModifier /= 2;
+                TargetCreep.AttachedDolls.Add(this);
                 _chaseStartingPosition = Position;
                 _chaseCounter = 0;
             }

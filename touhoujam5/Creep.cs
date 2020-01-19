@@ -12,12 +12,26 @@ namespace touhoujam5
     {
         private float _baseMoveSpeed;
         public float Hp { get; protected set; }
-        public float MoveSpeed => _baseMoveSpeed * MoveSpeedModifier;
-        public float MoveSpeedModifier { get; set; }
+        public float MoveSpeed
+        {
+            get
+            {
+                float modifier = 1;
+                float ret = _baseMoveSpeed;
+
+                foreach (var doll in AttachedDolls)
+                {
+                    modifier /= doll.SlowModifier;
+                }
+
+                return ret * modifier;
+            }
+        }
         public float Cooldown { get; protected set; }
         public float Worth { get; protected set; }
         public bool HasReachedEnd = false;
         public bool HasDied = false;
+        public List<AliceDoll> AttachedDolls = new List<AliceDoll>();
         public float PathProgress => (float)_pathIndex / _path.Length + _moveProgress * (1 / _path.Length);
 
         private float _maxHp;
@@ -33,7 +47,6 @@ namespace touhoujam5
         {
             _maxHp = Hp = hp;
             _baseMoveSpeed = moveSpeed;
-            MoveSpeedModifier = 1;
             Cooldown = cooldown;
             Worth = worth;
 

@@ -1,4 +1,5 @@
-﻿using SFML;
+﻿
+using SFML;
 using SFML.Audio;
 using SFML.Graphics;
 using SFML.System;
@@ -10,17 +11,20 @@ namespace touhoujam5
 {
     class AliceTower : Tower
     {
-        private float[] _slowAmounts = new float[] { 2, 2.5f, 3, 4 };
-        private float[] _damageRates = new float[] { 1, 1.5f, 2, 2.5f };
+        protected override bool ShouldShootEvenIfNoCreepsInRange => true;
+        private float[] _slowAmounts = new float[] { 1.5f, 1.75f, 2f, 2f };
+        private float[] _damageRates = new float[] { 4, 4, 4, 4 };
         private bool _hasShot = false;
         private List<AliceDoll> _dolls = new List<AliceDoll>();
 
+        public float SlowModifier => _slowAmounts[Level];
+
         public AliceTower() : base("Content/towers.png", 3, "Alice Margatroid",
             "Manipulates cute dolls\nto slow down enemies.",
-            costs: new float[] { 600, 500, 2000, 8000 },
+            costs: new float[] { 800, 1000, 1500, 2000 },
             shotRates: new float[] { 100, 100, 100, 100 },
             ranges: new float[] { 100, 150, 200, 300 },
-            strengths: new float[] { 5, 10, 20, 50 }
+            strengths: new float[] { 1, 3, 4, 6 }
         )
         {
             _dolls.Add(new AliceDoll(this, Strength, _damageRates[Level]));
@@ -30,7 +34,7 @@ namespace touhoujam5
         public override string GetExtraInfo(int level)
         {
             return "Num Dolls: " + (level + 1).ToString() + "\n" +
-                "Slow Amount: " + _slowAmounts[level].ToString() + "x";
+                "Slow Amount: " + _slowAmounts[level].ToString() + "x (total)";
         }
 
         public override Tower CloneLevel0()
@@ -104,6 +108,16 @@ namespace touhoujam5
                 {
                     targets.Add(doll.TargetCreep);
                 }
+            }
+        }
+
+        public override void BeforeRemove()
+        {
+            base.BeforeRemove();
+
+            foreach (AliceDoll doll in _dolls)
+            {
+                doll.Kill();
             }
         }
     }

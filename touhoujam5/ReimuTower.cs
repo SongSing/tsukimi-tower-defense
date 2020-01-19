@@ -14,10 +14,10 @@ namespace touhoujam5
         public ReimuTower()
             : base("Content/towers.png", 0, "Reimu Hakurei",
                   "Fires homing bullets that\nseek the closest enemy.",
-                  costs: new float[] { 200, 400, 1000, 5000 },
+                  costs: new float[] { 200, 300, 800, 2000 },
                   shotRates: new float[] { 1.5f, 2, 3, 4 },
                   ranges: new float[] { 100, 150, 250, 400 },
-                  strengths: new float[] { 1, 2, 5, 10 })
+                  strengths: new float[] { 1, 2, 2, 3 })
         {
 
         }
