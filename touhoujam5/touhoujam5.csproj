@@ -59,9 +59,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Content\arial.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Content\unifont_jp-12.1.04.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

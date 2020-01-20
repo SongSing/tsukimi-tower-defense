@@ -37,7 +37,7 @@ namespace touhoujam5
 
         public override void Update(float delta)
         {
-            _circleShapes.Clear();
+            //_circleShapes.Clear();
 			if (TargetCreep != null)
             {
 				if (TargetCreep.HasDied)
@@ -65,11 +65,11 @@ namespace touhoujam5
                     for (float i = Width / 2; i < distance - Width / 2; i += Width / 2)
                     {
                         hitboxes.Add(new Hitbox(ParentTower.Position - new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * i, Width / 2));
-                        //_circleShapes.Add(new CircleShape(Width / 2) { Origin = new Vector2f(Width / 2, Width / 2), Position = ParentTower.Position - new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * i, FillColor = new Color(255, 0, 0, 188) });
+                        //_circleShapes.Add(new CircleShape(Width / 2) { Origin = new Vector2f(Width / 2, Width / 2), Position = ParentTower.Position - new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * i, FillColor = new Color(255, 0, 0, 210) });
                     }
 
                     hitboxes.Add(new Hitbox(ParentTower.Position - new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * (distance - Width / 2), Width / 2));
-                    //_circleShapes.Add(new CircleShape(Width / 2) { Origin = new Vector2f(Width / 2, Width / 2), Position = ParentTower.Position - new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * (distance - Width / 2), FillColor = new Color(255, 0, 0, 188) });
+                    //_circleShapes.Add(new CircleShape(Width / 2) { Origin = new Vector2f(Width / 2, Width / 2), Position = ParentTower.Position - new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * (distance - Width / 2), FillColor = new Color(255, 0, 0, 210) });
 
                     foreach (Creep creep in Game.PlayArea.Creeps)
                     {
